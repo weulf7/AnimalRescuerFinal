@@ -1,8 +1,11 @@
 package org.example;
 
 
+
+
 import org.w3c.dom.ls.LSOutput;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,7 +26,9 @@ public class Game {
 
 
 //Start method
-    public  void start(){
+    public  void start() throws Exception {
+//        initializeNewAnimal();
+//        feedingOption();
 //        System.out.println("Welcome to AnimalRescuer 1.0");
 //        System.out.println("Greetings!!In order to continue you have to choose a username for yourself.\r");
 //        System.out.println();
@@ -33,12 +38,13 @@ public class Game {
 //        System.out.println();
 //        gender();
 //        System.out.println();
-        initAnimals();
+//        initAnimals();
 //        System.out.println();
 //        nameOfAnimal();
-//        displayMenu();
 //        feeding();
-        System.out.println(dog.getFavoriteActivity());
+        displayMenu();
+//
+//        System.out.println(dog.getFavoriteActivity());
 
 
     }
@@ -54,46 +60,58 @@ public class Game {
     //User information
 
 
-    public String initRescuer(){
+    public String initRescuer()  {
+        Scanner scanner =new Scanner(System.in);
         System.out.println("Please enter a username for yourself:");
-        String userName = scanner.nextLine();
-        adopter.setName(userName);
-        if (!userName.isEmpty()){
-            System.out.println("Thank you,and welcome "+adopter.getName());
-        }else {
-            System.out.println("This field cannot be empty");
-            return initRescuer();
-        }
-        return userName;
+        String name = scanner.nextLine();
 
+        while(!name.matches("[a-zA-Z]+")){
+            System.out.println("Please enter a valid username using only words!");
+            name = scanner.nextLine();
+        }
+        System.out.println("Welcome "+name+",enjoy the game!");
+        return name;
     }
 
 
 
-    public int userAge(){
-        System.out.println("In order to continue you must be at least 10 years old.");
-        System.out.println(adopter.getName()+",please enter your age:");
-        int age = scanner.nextInt();
-        if (age>=10){
-            System.out.println(adopter.getName()+" so you have "+age+",you can continue.");
-        }else {
-            System.out.println("You don't have at least 10 years old.");
+
+
+
+    public int userAge() {
+        System.out.println("Please enter your age:");
+        Scanner scanner = new Scanner(System.in);
+
+        try{
+            int option = scanner.nextInt();
+            System.out.println("Your age is "+option+",is a valid age,you can continue!");
+            return option;
+        }catch (InputMismatchException exception){
+            System.out.println("Please enter valid numbers!!!");
             return userAge();
         }
-return 0;
-
     }
+
+
+
+
+
+
+
+
+
+
 
     public char gender(){
         System.out.println("We are almost done "+adopter.getName()+",we just need your gender.");
         System.out.println("Please select your gender(f/m):");
-        String genderOption = scanner.next();
-        if (genderOption=="m" ||!genderOption.isEmpty()){
-            System.out.println(adopter.getName()+",so you are a boy.");
-        }else if (genderOption=="f"){
-            System.out.println(adopter.getName()+",so you are a girl.");
-        }else{
-            System.out.println("Invalid option.Please try again");
+        char genderOption = scanner.next().charAt(0);
+        if(genderOption=='m'){
+            System.out.println(adopter.getName()+",so you are a boy!");
+        }else if (genderOption=='f'){
+            System.out.println(adopter.getName()+",so you are a girl");
+        }else {
+            System.out.println("Invalid option,please try again!");
             return gender();
         }
 
@@ -110,37 +128,70 @@ return 0;
     public static void makingActivity(){
 
     }
-    public void feeding(){
-        animal.setHungerState(1);
-        if (animal.getHungerState()>0){
-            System.out.println("Your animal is hungry,you must feed him.her.You wanna feed her?:");
-            String option = scanner.next();
-
-        }else {
-            System.out.println("Your animal isn t hungry");
-        }
-
-    }
+//    public void feeding(){
+//        animal.setHungerState(1);
+//        if (animal.getHungerState()>0){
+//            System.out.println("Your animal is hungry,you must feed him.her.You wanna feed her?:");
+//            String option = scanner.next();
+//            if (option=="y"){
+//                initFood();
+//            }else {
+//                System.out.println("You choose to don't feed your animal.Your animal died.You lost the game!");
+//
+//            }
+//
+//        }else {
+//            System.out.println("Your animal isn t hungry");
+//        }
+//
+//    }
 
 
 
 //Setting up animals to user to choose
 
-    //
-    public  String nameOfAnimal(){
+
+
+    public String initializeNewAnimal(){
+
+        animal.setHungerState(10);
+        animal.setHealthState(10);
         System.out.println("So,"+adopter.getName()+" the next step would be to give a name to your new buddy.");
-        System.out.println("Please enter the name of your pet:");
+        System.out.println(adopter.getName()+",please enter the name of your pet:");
         String animalName = scanner.next();
         animal.setName(animalName);
+        System.out.println(animal.getHungerState());
         if (!animalName.isEmpty()){
-            System.out.println(adopter.getName()+",welcome your buddy,"+animal.getName()+"!");
+            System.out.println(adopter.getName()+",welcome your new buddy "+animal.getName());
         }else if (animalName.isEmpty()){
-            System.out.println("This field cannot be empty!");
-            return nameOfAnimal();
+            System.out.println("This field cannot be empty!!!");
+            return initializeNewAnimal();
         }
         return animalName;
 
+    }
 
+    public char feedingOption(){
+        System.out.println("Your pet hunger level is "+animal.getHungerState()+",you must feed your pet!!!");
+        System.out.println("You wanna feed your pet?(y/n)");
+        char feedOption = scanner.next().charAt(0);
+        if (feedOption=='y'){
+            initFood();
+        }else if (feedOption=='n'){
+            System.out.println("Your pet will die if u don't feed him!Are you sure about that?(y/n)");
+            char feedOption2 = scanner.next().charAt(0);
+            if (feedOption2=='y'){
+                initFood();
+            }else if (feedOption2=='n'){
+                System.out.println("Your animal has died because of hunger!!We warned you!");
+                System.out.println("Game Over!!!");
+                System.exit(0);
+            }
+        }else {
+            System.out.println("Invalid option!!");
+            return feedingOption();
+        }
+        return 0;
     }
 
 
@@ -152,22 +203,22 @@ return 0;
     public void initAnimals(){
         Animal dog=new Animal();
         dog.setType("Dog");
-        dog.setHungerState(1);
-        dog.setAge(1);
-        dog.setFavoriteActivity("Walking");
-        dog.setFavoriteFood("Bone");
-        dog.setSpiritState(8);
-        dog.setHealthState( ThreadLocalRandom.current().nextInt(0,10));
+//        dog.setHungerState(1);
+//        dog.setAge(1);
+//        dog.setFavoriteActivity("Walking");
+//        dog.setFavoriteFood("Bone");
+//        dog.setSpiritState(8);
+//        dog.setHealthState( ThreadLocalRandom.current().nextInt(0,10));
         availableAnimals[0]=dog;
 
         Animal cat=new Animal();
         cat.setType("Cat");
-        cat.setHungerState(1);
-        cat.setAge(1);
-        cat.setFavoriteActivity("Playing with ball");
-        cat.setFavoriteFood("Milk");
-        cat.setSpiritState(8);
-        cat.setHealthState(ThreadLocalRandom.current().nextInt(0,10));
+//        cat.setHungerState(9);
+//        cat.setAge(1);
+//        cat.setFavoriteActivity("Playing with ball");
+//        cat.setFavoriteFood("Milk");
+//        cat.setSpiritState(8);
+//        cat.setHealthState(ThreadLocalRandom.current().nextInt(0,10));
         availableAnimals[1]=cat;
 
         displayAnimals();
@@ -241,6 +292,11 @@ return 0;
                     System.out.println("-------------------------------------");
                     initActivity();
                     break;
+
+                case 'C':
+                    System.out.println("You choose to exit the game!");
+                    System.exit(0);
+
                 default:
                     System.out.println("Invalid option");
                     break;
@@ -252,6 +308,7 @@ return 0;
 
         while (option != 'C');
         System.out.println("Thank you for playing AnimalRescuer!");
+
 
     }
 
